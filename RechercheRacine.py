@@ -113,7 +113,8 @@ def bissection(f,x0, x1 , tol):
     while (abs(x0-x1)>=tol):# continuer tant que x0 et x1 ne sont pas suffisamment proche 
     
         c=(x0+x1)/2
-        if f(x0)*f(c)< 0:
+      
+        if fx1*f(c)> 0:
             x1=c
         else :
             x0=c
