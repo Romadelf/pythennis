@@ -31,6 +31,9 @@ def secante(f, x0, x1, tol):
     if x1 == x0 and abs(fx1) <= tol: # cas particulier ou l'intervalle est un point et que ce point et la solution
         return [x1,statut] 
     
+    if  fx0==fx1: # si ils sont égaux, le programme ne peut rien faire
+           statut=1
+           return [42, statut]
     
     
     while (abs(fx1-fx0) > tol) and (niter < nmax):
