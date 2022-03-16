@@ -1,0 +1,13 @@
+---
+:id: 117086273
+:submitters:
+- :name: Roman Del Favero
+  :email: roman.delfavero@student.uliege.be
+- :name: Syrius Tetog Noumo
+  :email: stetog@student.uliege.be
+:created_at: !ruby/object:ActiveSupport::TimeWithZone
+  utc: 2022-03-16 22:04:11.816410000 Z
+  zone: !ruby/object:ActiveSupport::TimeZone
+    name: America/Los_Angeles
+  time: 2022-03-16 15:04:11.816410000 Z
+:status: processed
