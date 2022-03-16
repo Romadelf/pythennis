@@ -17,7 +17,6 @@ w0_x3= 0
 
 Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
 
-haut_filet =1
 t0,T=0,1
 tol = 1/10000  #tolerance 
 coef = 0.7   # coef de changement de vz
@@ -205,10 +204,6 @@ def trajectoireFiletHorizontal (yInit , T ):
         arr_1 = variables_1.y
         
         y = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
-        
-        
-        
-        
 
     
     # debut :
@@ -229,10 +224,10 @@ def trajectoireFiletHorizontal (yInit , T ):
     
     for i in range(compteur_max):
         
-        if abs(x1[i])<=tol:  #si on est derriere le filet 
+        if abs(x1[i])<=tol:  # si on est derriere le filet 
             
-            if (abs(x3[i]- haut_filet) >= tol): #et que la hauteur de la balle est inferieur a cekke du filet 
-                                         #tol pour eviter les erreur de calcul
+            if (abs(x3[i]- hauteur_filet(x2[i])) >= tol): # et que la hauteur de la balle est inferieur a celle du filet
+                                                          #tol pour eviter les erreur de calcul
                 return [0,0,0] #erreur 
         else :  #ici ca veut dire qu'on est a droite du filet  x1[i]>tol
           
@@ -245,13 +240,15 @@ def trajectoireFiletHorizontal (yInit , T ):
                 Dernier_indice = compteur_max-1  #parce que indice va de 0 a n-1
                 
                 return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
-          
-           
-  
 
 
-
-
-
-
-
+def hauteur_filet(dist_centre):
+    
+    bord = 8.23 / 2 + 0.914 # = 5.029
+    h_nominale = 1.07
+    delta_h = h_nominale - 0.914
+    
+    if dist_centre >= bord or dist_centre <= -bord :
+        return h_nominale
+    else :
+        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
