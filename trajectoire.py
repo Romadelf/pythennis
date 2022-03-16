@@ -14,13 +14,17 @@ w0_x1= 30
 w0_x2= 15
 w0_x3= 0
 
+
 Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
 
+haut_filet =1
 t0,T=0,1
 tol = 1/10000  #tolerance 
 coef = 0.7   # coef de changement de vz
 compteur_max = 50
 nombre_iteration = np.linspace(t0,T,compteur_max)
+
+
 
 
 def oderhs(t, y):
@@ -39,7 +43,7 @@ def oderhs(t, y):
     
     #x1= y[0]
     #x2= y[1]      # ici on intialise la position car y est un vecteur   d'indice 0,1,2
-    x3= y[2] 
+    #x3= y[2] 
     
     
     #les forces  fdx et fm  a savoir les projection :
@@ -49,13 +53,7 @@ def oderhs(t, y):
     v_x2 = y[4]
     v_x3 = y[5]
     
-#   if y[5] < 0 and x3 <= tol:                  # ici on créé les rebonds
-#                                               # si la hauteur est inferieur a 0 
-#      v_x3 = (-coef)  * y[5]     # alors on inverse a vitesse selon z
-#   else :
-#     v_x3 = y[5]
-        
-    
+
     w_x1 = y[6]
     w_x2 = y[7]
     w_x3 = y[8]
@@ -153,27 +151,19 @@ def oderhs(t, y):
     #pas necessaire de remvoyer omega car tableau initialisé a zero
     return dy
 
-def bouing(t, y):
+
+
+def bouing(t, y):   #c'est notre event pour verifier quand x3vaut zero
     return y[2]
 bouing.direction = -1
 bouing.terminal = True
 
 
-def main():
 
-    
-    variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing)
-    arr_0 = variables_0.y
-    
-    if variables_0.status == 1 : # = si il rebondi
-    
-        new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
-        new_cond[5] = - coef * new_cond[5]
         
-        variables_1 = solve_ivp(oderhs,[0,1], new_cond , t_eval = np.linspace(0,1,50))
-        arr_1 = variables_1.y
+       # y = np.concatenate((arr_0, arr_1), axis=1)
         
-        return np.concatenate((arr_0, arr_1), axis=1)
+       # return y
         
         
 
@@ -195,12 +185,6 @@ def trajectoireFiletHorizontal (yInit , T ):
     
     #definition de parametre :
         
-    t0=0
-    compteur_max = 200
-    i = 0
-    haut_filet = 1 # cas ou filet droit 
-    tol = 0.001
-    D = 11.89 # en m
     
     Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
 
@@ -217,19 +201,29 @@ def trajectoireFiletHorizontal (yInit , T ):
         
         return  [0,0,0] #valeur  d'erreur au cas ou la vitesse initial est nul
   
+        
+    variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing)
+    arr_0 = variables_0.y
     
+    if variables_0.status == 1 : # = si il rebondi
+    
+        new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
+        new_cond[5] = -coef * new_cond[5]
+        
+        variables_1 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing )
+        arr_1 = variables_1.y
+        
+        y = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
+        
+        
+        
+        
 
     
     # debut :
         
-        
-    nombre_iteration = np.linspace(t0,T,compteur_max) #on cree un tableau de temp 
-
-    variable = solve_ivp(oderhs,[t0,T],Cond) #pas besoin de t_eval car tout fait dans TSPAN
-
-    #temp = variable.t pas necessaire 
-    
-    position = variable.y
+ 
+    position = y
   
     x1=position[0]  #longeur
     x2=position[1]  #largeur
@@ -244,14 +238,14 @@ def trajectoireFiletHorizontal (yInit , T ):
     
     for i in range(compteur_max):
         
-        if x1[i]<=tol:  #si on est derriere le filet 
+        if abs(x1[i])<=tol:  #si on est derriere le filet 
             
-            if x3[i]<=(haut_filet + tol): #et que la hauteur de la balle est inferieur a cekke du filet 
+            if (abs(x3[i]- haut_filet) >= tol): #et que la hauteur de la balle est inferieur a cekke du filet 
                                          #tol pour eviter les erreur de calcul
                 return [0,0,0] #erreur 
         else :  #ici ca veut dire qu'on est a droite du filet  x1[i]>tol
           
-            if x1[i]> D+tol: #on est hors du terrain
+            if abs (x1[i] + x0_x1)<=tol : #on est hors du terrain x0_x1 = -11.89 m
                 
                 return[0,0,0]
             else :
