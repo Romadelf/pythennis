@@ -22,9 +22,7 @@ t0,T=0,1
 tol = 1/10000  #tolerance 
 coef = 0.7   # coef de changement de vz
 compteur_max = 50
-nombre_iteration = np.linspace(t0,T,compteur_max)
-
-
+nombre_iteration = np.linspace(t0,T,compteur_max) #on cree un tableau de temp 
 
 
 def oderhs(t, y):
@@ -159,15 +157,6 @@ bouing.direction = -1
 bouing.terminal = True
 
 
-
-        
-       # y = np.concatenate((arr_0, arr_1), axis=1)
-        
-       # return y
-        
-        
-
-        
 def trajectoireFiletHorizontal (yInit , T ):
     
     #initialisation des condition initial :
@@ -209,8 +198,10 @@ def trajectoireFiletHorizontal (yInit , T ):
     
         new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
         new_cond[5] = -coef * new_cond[5]
-        
+
+########    t0 et t_eval ne sont-ils pas à adapter d'après ce que Arham avait fait chez lui ?
         variables_1 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing )
+########
         arr_1 = variables_1.y
         
         y = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
