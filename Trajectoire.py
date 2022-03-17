@@ -2,29 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-#definition des conditions initiales
-x0_x1 =-11.89
-x0_x2 = 0
-x0_x3 =2
-
-dx01_dt= 50
-dx02_dt= 1
-dx03_dt= 0
-
-w0_x1= 30 
-w0_x2= 15
-w0_x3= 0
-
-
-Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
-
 haut_filet =1
 tol = 10**(-5) #tolerance 
 coef = 0.7   # coef de changement de vz
-distance_maximal_terrain = - x0_x1
-
-
-
+distance_maximal_terrain = 11.89
 
 def oderhs(t, y):
     
@@ -158,21 +139,7 @@ bouing.direction = -1
 bouing.terminal = True
 
 
-def trajectoireFiletHorizontal (yInit , T ):
-    
-    #initialisation des condition initial :
-        
-    x0_x1  = yInit[0]
-    x0_x2  = yInit[1]
-    x0_x3  = yInit[2]
-    dx01_dt= yInit[3]
-    dx02_dt= yInit[4]
-    dx03_dt= yInit[5]
-    w0_x1  = yInit[6]
-    w0_x2  = yInit[7]
-    w0_x3  = yInit[8]
-    Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
-    
+def trajectoireFiletHorizontal(yInit , T):
     
     #definition de parametre :
         
@@ -180,21 +147,17 @@ def trajectoireFiletHorizontal (yInit , T ):
     t0,i=0,0
     nombre_iteration = np.linspace(t0,T,int(frequence*T))
     
-        
-    
-    
-
     #verification des donnés :
         
         #autrement dit si ya pas de vitesse(translation et rotation) initial  ya pas de mouvements
         #on renvoit la position initial
           
-    if (abs(dx01_dt)<=tol) and (abs(dx02_dt)<=tol) and (abs(dx03_dt)<=tol):
+    if (abs(yInit[3])<=tol) and (abs(yInit[4])<=tol) and (abs(yInit[5])<=tol):
       
         return  [0,0,0] #position initial  au cas ou la vitesse initial est nul
 
         
-    variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing,rtol =10**(-10) , atol = 10**(-25) )
+    variables_0 = solve_ivp(oderhs,[t0,T], yInit, t_eval = nombre_iteration, events = bouing,rtol =10**(-10) , atol = 10**(-25) )
     arr_0 = variables_0.y
     
     position = arr_0 #on initialise position  
@@ -247,12 +210,13 @@ def trajectoireFiletHorizontal (yInit , T ):
         if  x3[i] <= hauteur_filet(x2[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
                 return [0,0,0] #erreur 
         i +=1
-          
+        
     Dernier_indice = frequence-1  #parce que indice va de 0 a n-1
-    return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
-
-    
-
+    return [
+        x1[Dernier_indice],
+        x2[Dernier_indice],
+        x3[Dernier_indice]
+    ]
 
 def hauteur_filet(dist_centre):
     return haut_filet
