@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
 
 #definition des conditions initiales
 x0_x1 =-11.89
@@ -17,11 +18,12 @@ w0_x3= 0
 
 Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
 
-t0,T=0,1
-tol = 1/10000  #tolerance 
+haut_filet =1
+tol = 1/10000000  #tolerance 
 coef = 0.7   # coef de changement de vz
-compteur_max = 50
-nombre_iteration = np.linspace(t0,T,compteur_max) #on cree un tableau de temp 
+distance_maximal_terrain = - x0_x1
+
+
 
 
 def oderhs(t, y):
@@ -169,12 +171,18 @@ def trajectoireFiletHorizontal (yInit , T ):
     w0_x1  = yInit[6]
     w0_x2  = yInit[7]
     w0_x3  = yInit[8]
+    Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
     
     
     #definition de parametre :
         
+    compteur_max = 10**(6)
+    t0,i=0,0
+    nombre_iteration = np.linspace(t0,T,compteur_max)
     
-    Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
+        
+    
+    
 
     #verification des donnés :
         
@@ -182,73 +190,79 @@ def trajectoireFiletHorizontal (yInit , T ):
         #on renvoit la position initial
           
     if (abs(dx01_dt)<=tol) and (abs(dx02_dt)<=tol) and (abs(dx03_dt)<=tol):
-        
+      
         return  [x0_x1,x0_x2,x0_x3] #position initial  au cas ou la vitesse initial est nul
-    
-    if (abs(w0_x1)<=tol) and (abs(w0_x2)<=tol) and (abs(w0_x3)<=tol): #cas ou on w0 = 0 est evite les problemes
+
         
-        return  [0,0,0] #valeur  d'erreur au cas ou la vitesse initial est nul
-  
-        
-    variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing)
+    variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing,rtol =10**(-10) , atol = 10**(-25) )
     arr_0 = variables_0.y
     
+    position = arr_0 #on initialise position  
+ 
+    
     if variables_0.status == 1 : # = si il rebondi
-    
-        new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
-        new_cond[5] = -coef * new_cond[5]
-
-########    t0 et t_eval ne sont-ils pas à adapter d'après ce que Arham avait fait chez lui ?
-        variables_1 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing )
-########
-        arr_1 = variables_1.y
+     # modification de new cond :
+         
+         
+     new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
+     new_cond[5] = -coef * new_cond[5]
+     
+     #reinitialisation des donné :
+         
+         
+     indice = np.shape(arr_0)[1]
+     t0 =((indice)/(compteur_max))*T #on reinitialise t0 
+     
+     compteur_max -= indice #on diminiue compteur max  
+     nombre_iteration = np.linspace(t0,T,compteur_max)
+     
+     #on relance solve_ivp avec les nouvelles cond 
+     
+     variables_1 = solve_ivp(oderhs,[t0,T],new_cond ,t_eval = nombre_iteration, events = bouing , rtol =10**(-10),atol = 10**(-25) )     
+     arr_1 = variables_1.y
         
-        y = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
+  
+        
+        
+     position  = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
+        
 
-    
     # debut :
         
- 
-    position = y
+
+    
   
     x1=position[0]  #longeur
     x2=position[1]  #largeur
     x3=position[2]  #hauteur
     
-    
+
     
     #passe le filet   ou pas 
     
     
-    #voir event de solve ivp
-    
-    for i in range(compteur_max):
-        
-        if abs(x1[i])<=tol:  # si on est derriere le filet 
-            
-            if (abs(x3[i]- hauteur_filet(x2[i])) >= tol): # et que la hauteur de la balle est inferieur a celle du filet
-                                                          #tol pour eviter les erreur de calcul
+   # on reinitialise compteur_max comme l'indice maximal de y 
+    aux = np.shape(x1) #car shape(x1) = shape(x2) = shape(x3)  
+    compteur_max = aux[0] 
+   
+    while i <compteur_max and x1[i]<=tol: #tant que  on est avant le filet 
+        if  x3[i] <= hauteur_filet(x2[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
                 return [0,0,0] #erreur 
-        else :  #ici ca veut dire qu'on est a droite du filet  x1[i]>tol
+        i +=1
           
-            if abs (x1[i] + x0_x1)<=tol : #on est hors du terrain x0_x1 = -11.89 m
-                
-                return[0,0,0]
-            else :
-                
-                
-                Dernier_indice = compteur_max-1  #parce que indice va de 0 a n-1
-                
-                return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
+    Dernier_indice = compteur_max-1  #parce que indice va de 0 a n-1
+    return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
+
+    
 
 
 def hauteur_filet(dist_centre):
-    
-    bord = 8.23 / 2 + 0.914 # = 5.029
-    h_nominale = 1.07
-    delta_h = h_nominale - 0.914
-    
-    if dist_centre >= bord or dist_centre <= -bord :
-        return h_nominale
-    else :
-        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
+    return haut_filet
+#    bord = 8.23 / 2 + 0.914 # = 5.029
+#    h_nominale = 1.07
+#    delta_h = h_nominale - 0.914
+#    
+#    if dist_centre >= bord or dist_centre <= -bord :
+#        return h_nominale
+#    else :
+#        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
