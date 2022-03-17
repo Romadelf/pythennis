@@ -19,7 +19,7 @@ w0_x3= 0
 Cond= [x0_x1,x0_x2,x0_x3,dx01_dt,dx02_dt,dx03_dt,w0_x1,w0_x2,w0_x3]
 
 haut_filet =1
-tol = 1/10000000  #tolerance 
+tol = 10**(-5) #tolerance 
 coef = 0.7   # coef de changement de vz
 distance_maximal_terrain = - x0_x1
 
@@ -176,9 +176,9 @@ def trajectoireFiletHorizontal (yInit , T ):
     
     #definition de parametre :
         
-    compteur_max = 10**(6)
+    frequence = 10**(6)
     t0,i=0,0
-    nombre_iteration = np.linspace(t0,T,compteur_max)
+    nombre_iteration = np.linspace(t0,T,int(frequence*T))
     
         
     
@@ -208,13 +208,16 @@ def trajectoireFiletHorizontal (yInit , T ):
      new_cond[5] = -coef * new_cond[5]
      
      #reinitialisation des donné :
-         
-         
-     indice = np.shape(arr_0)[1]
-     t0 =((indice)/(compteur_max))*T #on reinitialise t0 
      
-     compteur_max -= indice #on diminiue compteur max  
-     nombre_iteration = np.linspace(t0,T,compteur_max)
+         
+     indice = np.shape(arr_0)[1] - 1
+     
+     t0 =variables_0.t[indice] #on reinitialise t0 
+     
+     #frequence*(T-t0) == on cree un tableau de frequence fixe allant du nouveau t0 au T donné 
+     # ce qui assure une precision a chaque rebond quel que soit T donné
+      
+     nombre_iteration = np.linspace(t0,T,int(frequence*(T-t0)))
      
      #on relance solve_ivp avec les nouvelles cond 
      
@@ -241,16 +244,16 @@ def trajectoireFiletHorizontal (yInit , T ):
     #passe le filet   ou pas 
     
     
-   # on reinitialise compteur_max comme l'indice maximal de y 
+   # on reinitialise frequence comme l'indice maximal de y 
     aux = np.shape(x1) #car shape(x1) = shape(x2) = shape(x3)  
-    compteur_max = aux[0] 
+    frequence = aux[0] 
    
-    while i <compteur_max and x1[i]<=tol: #tant que  on est avant le filet 
+    while i <frequence and x1[i]<=tol: #tant que  on est avant le filet 
         if  x3[i] <= hauteur_filet(x2[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
                 return [0,0,0] #erreur 
         i +=1
           
-    Dernier_indice = compteur_max-1  #parce que indice va de 0 a n-1
+    Dernier_indice = frequence-1  #parce que indice va de 0 a n-1
     return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
 
     
