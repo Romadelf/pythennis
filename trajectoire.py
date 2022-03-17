@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt # pas sur que c'est supporté par gradescope
 
 #definition des conditions initiales
 x0_x1 =-11.89
@@ -158,15 +158,6 @@ bouing.direction = -1
 bouing.terminal = True
 
 
-
-        
-       # y = np.concatenate((arr_0, arr_1), axis=1)
-        
-       # return y
-        
-        
-
-        
 def trajectoireFiletHorizontal (yInit , T ):
     
     #initialisation des condition initial :
@@ -255,21 +246,23 @@ def trajectoireFiletHorizontal (yInit , T ):
     compteur_max = aux[0] 
    
     while i <compteur_max and x1[i]<=tol: #tant que  on est avant le filet 
-        
-        if  x3[i] <= haut_filet :  # et si la hauteur de la balle est inferieur a celle du filet 
+        if  x3[i] <= hauteur_filet(x2[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
                 return [0,0,0] #erreur 
         i +=1
           
     Dernier_indice = compteur_max-1  #parce que indice va de 0 a n-1
-                
     return [x1[Dernier_indice],x2[Dernier_indice],x3[Dernier_indice]]
-          
-           
-  
+
+    
 
 
-
-
-
-
-
+def hauteur_filet(dist_centre):
+    return haut_filet
+#    bord = 8.23 / 2 + 0.914 # = 5.029
+#    h_nominale = 1.07
+#    delta_h = h_nominale - 0.914
+#    
+#    if dist_centre >= bord or dist_centre <= -bord :
+#        return h_nominale
+#    else :
+#        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
