@@ -1,6 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
-# import matplotlib.pyplot as plt # pas sur que c'est supporté par gradescope
 
 #definition des conditions initiales
 x0_x1 =-11.89
