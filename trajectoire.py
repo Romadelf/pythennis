@@ -185,7 +185,7 @@ def trajectoireFiletHorizontal (yInit , T ):
     
     #definition de parametre :
         
-    compteur_max = 100
+    compteur_max = 10**(6)
     t0,i=0,0
     nombre_iteration = np.linspace(t0,T,compteur_max)
     
