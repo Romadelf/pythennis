@@ -1,9 +1,0 @@
----
-:id: 116488552
-:submitters: []
-:created_at: !ruby/object:ActiveSupport::TimeWithZone
-  utc: 2022-03-12 17:25:11.849700000 Z
-  zone: !ruby/object:ActiveSupport::TimeZone
-    name: America/Los_Angeles
-  time: 2022-03-12 09:25:11.849700000 Z
-:status: processed
