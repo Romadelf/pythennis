@@ -191,7 +191,7 @@ def trajectoireFiletHorizontal (yInit , T ):
           
     if (abs(dx01_dt)<=tol) and (abs(dx02_dt)<=tol) and (abs(dx03_dt)<=tol):
       
-        return  [x0_x1,x0_x2,x0_x3] #position initial  au cas ou la vitesse initial est nul
+        return  [0,0,0] #position initial  au cas ou la vitesse initial est nul
 
         
     variables_0 = solve_ivp(oderhs,[t0,T],Cond ,t_eval = nombre_iteration, events = bouing,rtol =10**(-10) , atol = 10**(-25) )
