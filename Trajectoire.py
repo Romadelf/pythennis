@@ -201,33 +201,28 @@ def trajectoireFiletHorizontal (yInit , T ):
  
     
     if variables_0.status == 1 : # = si il rebondi
-     # modification de new cond :
-         
-         
-     new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
-     new_cond[5] = -coef * new_cond[5]
-     
-     #reinitialisation des donné :
-     
-         
-     indice = np.shape(arr_0)[1] - 1
-     
-     t0 =variables_0.t[indice] #on reinitialise t0 
-     
-     #frequence*(T-t0) == on cree un tableau de frequence fixe allant du nouveau t0 au T donné 
-     # ce qui assure une precision a chaque rebond quel que soit T donné
-      
-     nombre_iteration = np.linspace(t0,T,int(frequence*(T-t0)))
-     
-     #on relance solve_ivp avec les nouvelles cond 
-     
-     variables_1 = solve_ivp(oderhs,[t0,T],new_cond ,t_eval = nombre_iteration, events = bouing , rtol =10**(-10),atol = 10**(-25) )     
-     arr_1 = variables_1.y
+        # modification de new cond :
         
-  
+        new_cond = arr_0[0:arr_0.shape[0], arr_0.shape[1] - 1] # manière d'aller chercher les dernières variables dans arr
+        new_cond[5] = -coef * new_cond[5]
         
+        #reinitialisation des donné :
         
-     position  = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
+        indice = np.shape(arr_0)[1] - 1
+        
+        t0 =variables_0.t[indice] #on reinitialise t0 
+        
+        #frequence*(T-t0) == on cree un tableau de frequence fixe allant du nouveau t0 au T donné 
+        # ce qui assure une precision a chaque rebond quel que soit T donné
+        
+        nombre_iteration = np.linspace(t0,T,int(frequence*(T-t0)))
+        
+        #on relance solve_ivp avec les nouvelles cond 
+        
+        variables_1 = solve_ivp(oderhs,[t0,T],new_cond ,t_eval = nombre_iteration, events = bouing , rtol =10**(-10),atol = 10**(-25) )        
+        arr_1 = variables_1.y
+           
+        position  = np.concatenate((arr_0, arr_1), axis=1) # on regroupe les tableaux
         
 
     # debut :
