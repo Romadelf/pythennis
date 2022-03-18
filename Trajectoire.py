@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 tol = 10**(-5) #tolerance 
@@ -9,111 +8,40 @@ distance_maximal_terrain = 11.89
 def oderhs(t, instant_ball_data):
     
     # definition des parametre du systeme
-    d=0.0065
-    m=0.058
-    p=1.2
-    C_d=0.065
-    g=9.81
+    d = 0.065
+    m = 0.058
+    rho = 1.2
+    Cd = 0.65
+    g = 9.81
     
-    # ici on initialise notre repere orthonormé
-    Vec_u_x1=[1,0,0] #x
-    Vec_u_x2=[0,1,0] #y
-    Vec_u_x3=[0,0,1] #z
+    v = np.array([instant_ball_data[3],
+                  instant_ball_data[4],
+                  instant_ball_data[5]])
+    r = np.array([instant_ball_data[6],
+                  instant_ball_data[7],
+                  instant_ball_data[8]])
+    norm_r = np.linalg.norm(r)
+    norm_v = np.linalg.norm(v)
+    pi = np.pi
+    Cm = 1 / (2 + 1.96 * norm_v / (norm_r * d))
     
-    # x1= instant_ball_data[0], x2= instant_ball_data[1] et x3= instant_ball_data[2] sont inutiles pour le calcul de la variation
-
-    # les forces  fdx et fm  a savoir les projection :
+    Fg = np.array([0, 0, -m * g])
+    Fd = Cd * rho * pi * d**2 * -v**2 / 8
+    ev = np.cross(r, v)
+    n = ev / np.linalg.norm(ev)
+    Fm = Cm * rho * pi * d**2 * np.linalg.norm(v)**2 / 8 * n 
     
-    # ici on prend les trois composante de la vitesse (angulaire et de translation)
-    v_x1 = instant_ball_data[3]
-    v_x2 = instant_ball_data[4]
-    v_x3 = instant_ball_data[5]
+    a = (Fm + Fd + Fg)/m
+    dy = np.array([instant_ball_data[3],
+                   instant_ball_data[4],
+                   instant_ball_data[5],
+                   a[0],
+                   a[1],
+                   a[2],
+                   0,
+                   0,
+                   0])
     
-    w_x1 = instant_ball_data[6]
-    w_x2 = instant_ball_data[7]
-    w_x3 = instant_ball_data[8]
-   
-    # puis on calcule leurs normes
-   
-    vitesse_translation=[v_x1, v_x2 ,v_x3]
-    vitesse_angulaire  =[w_x1, w_x2 ,w_x3]
-    
-    norme_de_v= np.linalg.norm(vitesse_translation)
-    norme_de_w= np.linalg.norm(vitesse_angulaire)
-   
-    # NORME DES FORCES 
-    
-    Force_frottement= C_d*p*(np.pi)*((d*d)/8)*((norme_de_v)**2)
-    
-    C_m=1/(2+1.96*((norme_de_v)/(norme_de_w)*d))
-    
-    Force_magnus=C_m*p*(np.pi)*((d*d)/8)*((norme_de_v)**2)
-    
-    # ici on a un vecteur unitaire de la vitesse de translation
-    
-    direction_vitesse_translation= (vitesse_translation)/(norme_de_v)
-    
-    # mainenant on determine les composantes grace au produit scalaire des deux 
-    # vecteur unitaire  pour obtenir nos trois composante
-    # on fait (-) la direction car c'est l'inverse de la vitesse
-    
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x1)
-    fdx1= (Force_frottement)*(aux)
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x2)
-    fdx2= (Force_frottement)*(aux)
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x3)
-    fdx3= (Force_frottement)*(aux)
-    
-    # fmx1? fmx2? fmx3? en fonction de leur direction
-    
-    # ici on fait le produit vectorielle w vectoriel v puis on le norme 
-    
-    Produit_vectoriel = np.cross(vitesse_translation,vitesse_angulaire)
-    
-    Norme_Produit_vectoriel=np.linalg.norm(Produit_vectoriel)
-    
-    direction_force_magnus=(Produit_vectoriel)/(Norme_Produit_vectoriel)                 
-    
-    aux1=np.dot(direction_force_magnus,Vec_u_x1)
-    fmx1= (Force_magnus)*aux1
-    aux1=np.dot(direction_force_magnus,Vec_u_x2)
-    fmx2= (Force_magnus)*aux1
-    aux1=np.dot(direction_force_magnus,Vec_u_x3)
-    fmx3= (Force_magnus)*aux1
-    
-    # Poids
-    
-    fgx1 = 0
-    fgx2 = 0
-    fgx3 =-m*g
-
-    # definition du systeme
-    
-    # on pose :
-    # X= dx1_dt   ainsi on a  dX_dt = acceleration selon x1
-    # Y= dx2_dt               dY_dt = acceleration selon x2
-    # Z= dx3_dt               dZ_dt = acceleration selon x3
-    
-    # vecteur instant_ball_data (x1,x2,x3,dx1_dt,dx2_dt,dx3_dt,w1,w2,w3)
-    # indice     0  1  2  3      4       5     6  7  8
-  
-    dx1_dt = v_x1  # ici on  reprend les variables deja pris au debut pour les normes
-    dx2_dt = v_x2  # on prend les dx_dt pour juste respecté les conventions
-    dx3_dt = v_x3
-    
-    dy = np.zeros(9)
-    
-    # on met les trois composantes de la vitesse, 
-    dy[0]= dx1_dt
-    dy[1]= dx2_dt
-    dy[2]= dx3_dt
-    
-    # les trois composantes de l'acceleration
-    dy[3]=(fgx1+fdx1+fmx1)*1/m
-    dy[4]=(fgx2+fdx2+fmx2)*1/m
-    dy[5]=(fgx3+fdx3+fmx3)*1/m
-    
-    # pas necessaire de remvoyer omega car tableau initialisé a zero
     return dy
 
 def bouing(t, instant_ball_data): # event pour verifier quand x3 vaut zero
