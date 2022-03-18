@@ -9,11 +9,11 @@ distance_maximal_terrain = 11.89
 def oderhs(t, instant_ball_data):
     
     # definition des parametre du systeme
-    d=0.065
-    m=0.058
-    p=1.2
-    C_d=0.65
-    g=9.81
+    d = 0.065
+    m = 0.058
+    p = 1.2
+    C_d = 0.65
+    g = 9.81
     
     # ici on initialise notre repere orthonormé
     Vec_u_x1=[1,0,0] #x
@@ -118,7 +118,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     
     # définition des paramètres :
     
-    frequence = 10**(3)
+    frequence = 10**(5)
     instants_a_evaluer = np.linspace(0, t_f, int(frequence * t_f))
     
     # verification des donnés :
@@ -136,7 +136,9 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
         [0, t_f],
         initial_ball_data,
         t_eval = instants_a_evaluer,
-        events = bouing)
+        events = bouing,
+        rtol = 10**(-5),
+        atol = 10**(-8))
 
     ball_data_timetable = pre_bounce_solve.y
     
@@ -161,7 +163,9 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
             [t_i, t_f],
             after_bounce_ball_data,
             t_eval = instants_a_evaluer,
-            events = bouing)
+            events = bouing,
+            rtol = 10**(-5),
+            atol = 10**(-8))
            
         ball_data_timetable = np.concatenate((ball_data_timetable, post_bounce_solve.y), axis=1) # on regroupe les tableaux
 
