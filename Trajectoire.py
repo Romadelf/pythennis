@@ -2,7 +2,6 @@ import numpy as np
 #import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-tol = 10**(-5) #tolerance 
 coef = 0.7 # coef de changement de vz
 distance_maximal_terrain = 11.89
 
@@ -101,9 +100,9 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     # comme cela pose des problèmes de division par 0 dans oderhs,
     # on exclut ce cas, lequel est de toute façon anecdotique
     # => à voir si on garde
-    if(abs(initial_ball_data[3]) <= tol and
-       abs(initial_ball_data[4]) <= tol and
-       abs(initial_ball_data[5]) <= tol):
+    if(abs(initial_ball_data[3]) <= 0 and
+       abs(initial_ball_data[4]) <= 0 and
+       abs(initial_ball_data[5]) <= 0):
         return [0,0,0]
     
     pre_bounce_solve = solve_ivp(
@@ -155,7 +154,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     
     index_max = np.shape(x)[0] - 1 # car shape(x) = shape(y) = shape(z)
     i = 0
-    while i <= index_max and x[i] <= tol: # tant que  on est avant le filet 
+    while i <= index_max and x[i] <= 0: # tant que  on est avant le filet 
         if  z[i] <= hauteur_filet(y[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
                 return [0,0,0] # hors-jeu 
         i += 1
