@@ -16,9 +16,9 @@ def oderhs(t, instant_ball_data):
     g = 9.81
     
     # ici on initialise notre repere orthonormé
-    Vec_u_x1=[1,0,0] #x
-    Vec_u_x2=[0,1,0] #y
-    Vec_u_x3=[0,0,1] #z
+    Vec_u_x1 = [1, 0, 0] #x
+    Vec_u_x2 = [0, 1, 0] #y
+    Vec_u_x3 = [0, 0, 1] #z
     
     # x1= instant_ball_data[0], x2= instant_ball_data[1] et x3= instant_ball_data[2] sont inutiles pour le calcul de la variation
 
@@ -45,8 +45,8 @@ def oderhs(t, instant_ball_data):
     
     C_m = 1 / (2 + 1.96 * norme_de_v / (norme_de_w * d))
     
-    Force_frottement = C_d * p * np.pi * d**2 / 8 * norme_de_v**2    
-    Force_magnus     = C_m * p * np.pi * d**2 / 8 * norme_de_v**2
+    force_frottement = C_d * p * np.pi * d**2 / 8 * norme_de_v**2    
+    force_magnus     = C_m * p * np.pi * d**2 / 8 * norme_de_v**2
     
     # ici on a un vecteur unitaire de la vitesse de translation
     
@@ -56,29 +56,29 @@ def oderhs(t, instant_ball_data):
     # vecteur unitaire  pour obtenir nos trois composante
     # on fait (-) la direction car c'est l'inverse de la vitesse
     
-    fdx1= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x1)
-    fdx2= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x2)
-    fdx3= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x3)
+    fdx1 = force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x1)
+    fdx2 = force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x2)
+    fdx3 = force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x3)
     
     # fmx1? fmx2? fmx3? en fonction de leur direction
     
     # ici on fait le produit vectorielle w vectoriel v puis on le norme 
     
-    Produit_vectoriel = np.cross(vitesse_translation, vitesse_angulaire)
+    produit_vectoriel = np.cross(vitesse_translation, vitesse_angulaire)
     
-    Norme_Produit_vectoriel = np.linalg.norm(Produit_vectoriel)
+    norme_produit_vectoriel = np.linalg.norm(produit_vectoriel)
     
-    direction_force_magnus = Produit_vectoriel / Norme_Produit_vectoriel                
+    direction_force_magnus = produit_vectoriel / norme_produit_vectoriel                
     
-    fmx1 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x1)
-    fmx2 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x2)
-    fmx3 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x3)
+    fmx1 = force_magnus * np.dot(direction_force_magnus, Vec_u_x1)
+    fmx2 = force_magnus * np.dot(direction_force_magnus, Vec_u_x2)
+    fmx3 = force_magnus * np.dot(direction_force_magnus, Vec_u_x3)
     
     # Poids
     
     fgx1 = 0
     fgx2 = 0
-    fgx3 = -m*g
+    fgx3 = -m * g
 
     # definition du systeme
     
@@ -97,14 +97,14 @@ def oderhs(t, instant_ball_data):
     dy = np.zeros(9)
     
     # on met les trois composantes de la vitesse, 
-    dy[0]= dx1_dt
-    dy[1]= dx2_dt
-    dy[2]= dx3_dt
+    dy[0] = dx1_dt
+    dy[1] = dx2_dt
+    dy[2] = dx3_dt
     
     # les trois composantes de l'acceleration
-    dy[3]=(fgx1 + fdx1 + fmx1) / m
-    dy[4]=(fgx2 + fdx2 + fmx2) / m
-    dy[5]=(fgx3 + fdx3 + fmx3) / m
+    dy[3] = (fgx1 + fdx1 + fmx1) / m
+    dy[4] = (fgx2 + fdx2 + fmx2) / m
+    dy[5] = (fgx3 + fdx3 + fmx3) / m
     
     # pas necessaire de remvoyer omega car tableau initialisé a zero
     return dy
