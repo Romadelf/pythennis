@@ -159,8 +159,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
         # frequence * (delta_t) == on cree un tableau de frequence fixe allant du nouveau t_i au t_f donné 
         # ce qui assure une precision a chaque rebond quel que soit t_f donné
         
-        indice = np.shape(arr_0)[1] - 1
-        t_i = pre_bounce_solve.t[indice]
+        t_i = pre_bounce_solve.t[-1] # avec -1, on lit le tableau à l'envers, donc on trouve le dernier élément
         delta_t = t_f - t_i
         instants_a_evaluer = np.linspace(t_i, t_f, int(frequence * delta_t))
         
@@ -179,26 +178,25 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
 
     # debut :
     
-    x=position[0]  #longeur
-    y=position[1]  #largeur
-    z=position[2]  #hauteur
+    x=ball_data_timetable[0]  #longeur
+    y=ball_data_timetable[1]  #largeur
+    z=ball_data_timetable[2]  #hauteur
     
     # passe le filet ou pas ?
-    # =>  on reinitialise frequence comme l'indice maximal de y
+    # => on va parcourir les valeurs jusqu'au filet et sans dépasser l'indice maximal
     
-    frequence = np.shape(x)[0] # car shape(x) = shape(y) = shape(z)
+    index_max = np.shape(x)[0] - 1 # car shape(x) = shape(y) = shape(z)
     i = 0
-    while i < frequence and x[i] <= tol: #tant que  on est avant le filet 
+    while i <= index_max and x[i] <= tol: # tant que  on est avant le filet 
         if  z[i] <= hauteur_filet(y[i]) :  # et si la hauteur de la balle est inferieur a celle du filet 
-                return [0,0,0] #erreur 
+                return [0,0,0] # hors-jeu 
         i += 1
         
-    dernier_indice = frequence - 1  #parce que indice va de 0 a n-1
     return [
-        x[dernier_indice],
-        y[dernier_indice],
-        z[dernier_indice]
-    ]
+        x[index_max],
+        y[index_max],
+        z[index_max]
+    ] # on aurait aussi pu utiliser -1 (e.g.: x[-1])
 
 def hauteur_filet(dist_centre):
     return 1 # temporaire, pour le milestone 2
