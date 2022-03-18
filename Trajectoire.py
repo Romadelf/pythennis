@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 tol = 10**(-5) #tolerance 
@@ -43,7 +43,7 @@ def oderhs(t, instant_ball_data):
    
     # NORME DES FORCES
     
-    C_m = 1 / (2 + 1.96 * norme_de_v / norme_de_w * d)
+    C_m = 1 / (2 + 1.96 * norme_de_v / (norme_de_w * d))
     
     Force_frottement = C_d * p * np.pi * d**2 / 8 * norme_de_v**2    
     Force_magnus     = C_m * p * np.pi * d**2 / 8 * norme_de_v**2
@@ -117,7 +117,7 @@ bouing.terminal = True
 def trajectoireFiletHorizontal(initial_ball_data, t_f):
     
     # définition des paramètres :
-        
+    
     frequence = 10**(3)
     instants_a_evaluer = np.linspace(0, t_f, int(frequence * t_f))
     
