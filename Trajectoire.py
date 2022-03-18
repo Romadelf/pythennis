@@ -46,9 +46,13 @@ def oderhs(t, instant_ball_data):
     
     # fmx1? fmx2? fmx3? en fonction de leur direction
     # ici on fait le produit vectoriel v * w puis on le norme
-    produit_vectoriel = np.cross(vitesse_translation, vitesse_angulaire)
+    produit_vectoriel = np.cross(vitesse_angulaire, vitesse_translation)
     norme_produit_vectoriel = np.linalg.norm(produit_vectoriel)
-    direction_force_magnus = produit_vectoriel / norme_produit_vectoriel                
+    direction_force_magnus = produit_vectoriel / norme_produit_vectoriel
+    # Autre manière de le faire :
+    # direction_force_magnus =  np.cross(
+    #     vitesse_angulaire / np.linalg.norm(vitesse_angulaire),
+    #     vitesse_translation / np.linalg.norm(vitesse_translation))
     
     fmx1 = force_magnus * np.dot(direction_force_magnus, vec_u_x1)
     fmx2 = force_magnus * np.dot(direction_force_magnus, vec_u_x2)
