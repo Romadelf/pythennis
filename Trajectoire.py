@@ -9,10 +9,10 @@ distance_maximal_terrain = 11.89
 def oderhs(t, instant_ball_data):
     
     # definition des parametre du systeme
-    d=0.0065
+    d=0.065
     m=0.058
     p=1.2
-    C_d=0.065
+    C_d=0.65
     g=9.81
     
     # ici on initialise notre repere orthonormé
@@ -85,7 +85,7 @@ def oderhs(t, instant_ball_data):
     
     fgx1 = 0
     fgx2 = 0
-    fgx3 =-m*g
+    fgx3 = -m*g
 
     # definition du systeme
     
@@ -109,9 +109,9 @@ def oderhs(t, instant_ball_data):
     dy[2]= dx3_dt
     
     # les trois composantes de l'acceleration
-    dy[3]=(fgx1+fdx1+fmx1)*1/m
-    dy[4]=(fgx2+fdx2+fmx2)*1/m
-    dy[5]=(fgx3+fdx3+fmx3)*1/m
+    dy[3]=(fgx1 + fdx1 + fmx1) / m
+    dy[4]=(fgx2 + fdx2 + fmx2) / m
+    dy[5]=(fgx3 + fdx3 + fmx3) / m
     
     # pas necessaire de remvoyer omega car tableau initialisé a zero
     return dy
