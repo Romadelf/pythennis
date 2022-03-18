@@ -125,7 +125,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     
     # définition des paramètres :
         
-    frequence = 10**(6)
+    frequence = 10**(3)
     instants_a_evaluer = np.linspace(0, t_f, int(frequence * t_f))
     
     # verification des donnés :
@@ -143,9 +143,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
         [0, t_f],
         initial_ball_data,
         t_eval = instants_a_evaluer,
-        events = bouing,
-        rtol = 10**(-10),
-        atol = 10**(-25))
+        events = bouing)
 
     ball_data_timetable = pre_bounce_solve.y
     
@@ -170,9 +168,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
             [t_i, t_f],
             after_bounce_ball_data,
             t_eval = instants_a_evaluer,
-            events = bouing,
-            rtol = 10**(-10),
-            atol = 10**(-25))
+            events = bouing)
            
         ball_data_timetable = np.concatenate((ball_data_timetable, post_bounce_solve.y), axis=1) # on regroupe les tableaux
 
