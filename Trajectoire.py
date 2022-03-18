@@ -35,51 +35,44 @@ def oderhs(t, instant_ball_data):
    
     # puis on calcule leurs normes
    
-    vitesse_translation=[v_x1, v_x2 ,v_x3]
-    vitesse_angulaire  =[w_x1, w_x2 ,w_x3]
+    vitesse_translation = [v_x1, v_x2, v_x3]
+    vitesse_angulaire = [w_x1, w_x2, w_x3]
     
-    norme_de_v= np.linalg.norm(vitesse_translation)
-    norme_de_w= np.linalg.norm(vitesse_angulaire)
+    norme_de_v = np.linalg.norm(vitesse_translation)
+    norme_de_w = np.linalg.norm(vitesse_angulaire)
    
-    # NORME DES FORCES 
+    # NORME DES FORCES
     
-    Force_frottement= C_d*p*(np.pi)*((d*d)/8)*((norme_de_v)**2)
+    C_m = 1 / (2 + 1.96 * norme_de_v / norme_de_w * d)
     
-    C_m=1/(2+1.96*((norme_de_v)/(norme_de_w)*d))
-    
-    Force_magnus=C_m*p*(np.pi)*((d*d)/8)*((norme_de_v)**2)
+    Force_frottement = C_d * p * np.pi * d**2 / 8 * norme_de_v**2    
+    Force_magnus     = C_m * p * np.pi * d**2 / 8 * norme_de_v**2
     
     # ici on a un vecteur unitaire de la vitesse de translation
     
-    direction_vitesse_translation= (vitesse_translation)/(norme_de_v)
+    direction_vitesse_translation = vitesse_translation / norme_de_v
     
     # mainenant on determine les composantes grace au produit scalaire des deux 
     # vecteur unitaire  pour obtenir nos trois composante
     # on fait (-) la direction car c'est l'inverse de la vitesse
     
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x1)
-    fdx1= (Force_frottement)*(aux)
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x2)
-    fdx2= (Force_frottement)*(aux)
-    aux= np.dot(- direction_vitesse_translation,Vec_u_x3)
-    fdx3= (Force_frottement)*(aux)
+    fdx1= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x1)
+    fdx2= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x2)
+    fdx3= Force_frottement * np.dot(-direction_vitesse_translation, Vec_u_x3)
     
     # fmx1? fmx2? fmx3? en fonction de leur direction
     
     # ici on fait le produit vectorielle w vectoriel v puis on le norme 
     
-    Produit_vectoriel = np.cross(vitesse_translation,vitesse_angulaire)
+    Produit_vectoriel = np.cross(vitesse_translation, vitesse_angulaire)
     
-    Norme_Produit_vectoriel=np.linalg.norm(Produit_vectoriel)
+    Norme_Produit_vectoriel = np.linalg.norm(Produit_vectoriel)
     
-    direction_force_magnus=(Produit_vectoriel)/(Norme_Produit_vectoriel)                 
+    direction_force_magnus = Produit_vectoriel / Norme_Produit_vectoriel                
     
-    aux1=np.dot(direction_force_magnus,Vec_u_x1)
-    fmx1= (Force_magnus)*aux1
-    aux1=np.dot(direction_force_magnus,Vec_u_x2)
-    fmx2= (Force_magnus)*aux1
-    aux1=np.dot(direction_force_magnus,Vec_u_x3)
-    fmx3= (Force_magnus)*aux1
+    fmx1 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x1)
+    fmx2 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x2)
+    fmx3 = Force_magnus * np.dot(direction_force_magnus, Vec_u_x3)
     
     # Poids
     
