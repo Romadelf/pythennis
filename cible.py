@@ -172,8 +172,10 @@ def rechercheVitesse(y0,cibleRebond) :
     z =    pos_cylin[2]
     
     def f_vitesse(norm_v) : 
-       
-        r =  ((norm_v**2)-z)/(Tj.np.cos(theta)+Tj.np.sin(theta)) #retrouve r a partir de la norme
+       #erreur 
+        #TODO probleme r
+       # r =  ((norm_v**2)-z)/(Tj.np.cos(theta)+Tj.np.sin(theta)) #retrouve r a partir de la norme
+        r = Tj.np.sqrt((norm_v**2)-(z**2))
         
         pos_carte = convert_Cy_to_Car(r,theta ,z)#on reconvertie en cartesienne
         
@@ -215,7 +217,8 @@ def rechercheOmega(y0,cibleRebond) :
     
     def f_omega(norm_w) : 
        
-        r =  ((norm_w**2)-z)/(Tj.np.cos(theta)+Tj.np.sin(theta)) #retrouve r a partir de la norme
+       # r =  ((norm_w**2)-z)/(Tj.np.cos(theta)+Tj.np.sin(theta)) #retrouve r a partir de la norme
+        r = Tj.np.sqrt((norm_w**2)-(z**2))
         
         pos_carte = convert_Cy_to_Car(r,theta ,z)#on reconvertie en cartesienne
         
