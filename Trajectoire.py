@@ -122,6 +122,8 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f ):
 
     ball_data_timetable = pre_bounce_solve.y
     
+    print ('rebondit a la position ' , ball_data_timetable[0,-1])
+    
     if pre_bounce_solve.status == 1 : # = si il rebondi
         # manière d'aller chercher les dernières variables dans ball_data_timetable
         # TODO_LOW possiblement plus clair d'utilisation via pre_bounce_solve.t.shape[0]
@@ -178,7 +180,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f ):
         x[index_max],
         y[index_max],
         z[index_max]
-    ] # on aurait aussi pu utiliser -1 (e.g.: x[-1])
+            ] # on aurait aussi pu utiliser -1 (e.g.: x[-1])
 
 def hauteur_filet(dist_centre):
    # return 1 # temporaire, pour le milestone 2
