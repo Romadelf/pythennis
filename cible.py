@@ -12,11 +12,12 @@ import RechercheRacine as R
 #Condition initial :     d   
 
 y0 = [-11.89,0,2,50,1,0,30,15,0]    
-
+cond =  [-11.89,0,2,50,1,0,30,15,0]    
 #parametre : 
     
 t_i , t_f = 0, 4  #t_span 
 n_point = 200  #nombre de point 
+n_point_apres = 150  #apres rebond
 instants_a_evaluer = Tj.np.linspace(t_i, t_f,n_point ) 
   
 statut  , error = 0 , 42
@@ -25,7 +26,7 @@ tol =  1/1000 #tolerance au millimetre
 
 #intervalle 
 
-haut_min,haut_max =0, 10 # m
+haut_min,haut_max =  0 , 80 # m
 theta_min, theta_max = 0 , (Tj.np.pi)/2
 vitesse_min, vitesse_max = 1 , 500
 omega_min, omega_max = 1 , 1000
@@ -39,6 +40,7 @@ def event_hauteur (t,y0):
       return y0[2]
 event_hauteur.direction = -1
 event_hauteur.terminal = True
+
 
 
 #utilise dans toutes les  fonctions cibleHauteur donc general
@@ -256,37 +258,73 @@ def rechercheOmega(y0,cibleRebond) :
     
 def rechercheHauteur2(y0,cibleHauteur):
     
-    def event_rebond (t,y):
-         if y[2]<tol:
-              y[2] *= Tj.coef  #simulation d'un rebond 
-        #mais on renvoit pas zero pour ne pas arrete solve ivp
-         
-         if abs(y[2]-cibleHauteur)<tol:  #
-              return 0
-          
-    event_hauteur.direction = -1
-    event_hauteur.terminal = True       
-
+    #Definition d'event
+    def event_apres_rebond(t,m):
+       
+              return m[2]-cibleHauteur
+             
+    event_apres_rebond.direction = 1
+    event_apres_rebond.terminal = True
+   
+    m = Tj.np.zeros(9)
     
     #argument de fonction : 
     def f_hauteur(h):
-        #Definition d'event
-      
-
-    
+       
+          
         y0[2] =  h 
         solve = Tj.solve_ivp(
             Tj.oderhs,
             [t_i, t_f],
             y0,
             t_eval = instants_a_evaluer,
-            events =event_rebond,
+            events =event_hauteur,
             rtol = 10**(-5),
             atol = 10**(-8))
     
         timetable = solve.y
-        x3_hauteur = timetable [2,-1]  #x3 est l'abcisse 
-        return x3_hauteur - cibleHauteur #on retourn la difference pour savoir quand c'est zero 
+
+       
+        if solve.status == 1:
+            
+           
+            m[0] = timetable [0,-1]
+            m[1] = timetable [1,-1]
+            m[2] = timetable [2,-1]
+            m[3] = timetable [3,-1]
+            m[4] = timetable [4,-1]
+            m[5] = Tj.coef*timetable [5,-1] #le, fameux coefficient egal a -0.7
+            m[6] = timetable [6,-1]
+            m[7] = timetable [7,-1]
+            m[8] = timetable [8,-1]
+
+
+            t_in = solve.t[-1] #on continue a partir de l'instant precedent 
+            
+            instants_a_evaluer_2 = Tj.np.linspace(t_in, t_f,n_point_apres)#on recree un tableau
+            solve_apres_rebond = Tj.solve_ivp(
+                Tj.oderhs,
+                [t_in, t_f],
+                m,
+                t_eval = instants_a_evaluer_2,
+                events =event_apres_rebond,
+                rtol = 10**(-5),
+                atol = 10**(-8))
+            
+            
+            if solve_apres_rebond.status == 1:
+               
+                Nouveau_timetable  = solve_apres_rebond.y
+                timetable = Nouveau_timetable
+           
+      
+        x3_hauteur = timetable [2,-1]  #x3 est la hauteur 
+        
+        return x3_hauteur - cibleHauteur
+        
+           
+        
+      
     return R.bissection(f_hauteur, haut_min, haut_max , tol) #bissection car se comporte mieux 
 
 
