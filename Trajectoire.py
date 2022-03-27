@@ -1,8 +1,10 @@
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-coef = 0.7 # coef de changement de vz
+
+
+coef = - 0.7 # coef de changement de vz
 distance_maximal_terrain = 11.89
 
 def oderhs(t, instant_ball_data):
@@ -92,7 +94,7 @@ def bouing(t, instant_ball_data): # event pour verifier quand x3 vaut zero
 bouing.direction = -1
 bouing.terminal = True
 
-def trajectoireFiletHorizontal(initial_ball_data, t_f):
+def trajectoireFiletHorizontal(initial_ball_data, t_f ):
     
     # définition des paramètres :
     
@@ -124,7 +126,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
         # manière d'aller chercher les dernières variables dans ball_data_timetable
         # TODO_LOW possiblement plus clair d'utilisation via pre_bounce_solve.t.shape[0]
         after_bounce_ball_data = ball_data_timetable[0:ball_data_timetable.shape[0], ball_data_timetable.shape[1] - 1]
-        after_bounce_ball_data[5] *= -coef
+        after_bounce_ball_data[5] *= coef
         
         # reinitialisation des données :
         # frequence * (delta_t) == on cree un tableau de frequence fixe allant du nouveau t_i au t_f donné 
