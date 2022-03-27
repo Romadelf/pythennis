@@ -170,12 +170,12 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     ] # on aurait aussi pu utiliser -1 (e.g.: x[-1])
 
 def hauteur_filet(dist_centre):
-    return 1 # temporaire, pour le milestone 2
-#    bord = 8.23 / 2 + 0.914 # = 5.029
-#    h_nominale = 1.07
-#    delta_h = h_nominale - 0.914
-#    
-#    if dist_centre >= bord or dist_centre <= -bord :
-#        return h_nominale
-#    else :
-#        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
+   # return 1 # temporaire, pour le milestone 2
+    bord = 8.23 / 2 + 0.914 # = 5.029
+    h_nominale = 1.07
+    delta_h = h_nominale - 0.914
+    
+    if dist_centre >= bord or dist_centre <= -bord :
+        return h_nominale
+    else :
+        return h_nominale - np.cos(dist_centre * (np.pi / 2) / bord) * delta_h
