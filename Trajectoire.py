@@ -153,6 +153,15 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     y=ball_data_timetable[1]  #largeur
     z=ball_data_timetable[2]  #hauteur
     
+
+
+    
+    
+    plt.plot(x,z)
+    plt.title('filet') #Ajout d'un titre
+    plt.ylabel('Axe des Y') # Labélisation de l'axe des ordonnées
+    plt.xlabel('Axe des X')
+    
     # passe le filet ou pas ?
     # => on va parcourir les valeurs jusqu'au filet et sans dépasser l'indice maximal
     
