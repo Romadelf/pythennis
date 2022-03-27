@@ -27,8 +27,8 @@ tol =  1/1000 #tolerance au millimetre
 
 haut_min,haut_max =0, 10 # m
 theta_min, theta_max = 0 , (Tj.np.pi)/2
-vitesse_min, vitesse_max = 1 , 100 
-omega_min, omega_max = 1 , 100
+vitesse_min, vitesse_max = 1 , 500
+omega_min, omega_max = 1 , 1000
 
 cibleHauteur = 1 #arbitraire
 
