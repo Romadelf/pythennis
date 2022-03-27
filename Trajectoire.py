@@ -2,6 +2,8 @@ import numpy as np
 #import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
+import matplotlib.pyplot as plt
+
 coef = 0.7 # coef de changement de vz
 distance_maximal_terrain = 11.89
 
@@ -96,7 +98,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     
     # définition des paramètres :
     
-    frequence = 10**(5)
+    frequence = 10**(2)
     instants_a_evaluer = np.linspace(0, t_f, int(frequence * t_f))
     
     # verification des donnés :
@@ -152,6 +154,11 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
     x=ball_data_timetable[0]  #longeur
     y=ball_data_timetable[1]  #largeur
     z=ball_data_timetable[2]  #hauteur
+    
+    plt.plot(x,z)
+    plt.title('filet') #Ajout d'un titre
+    plt.ylabel('Axe des Y') # Labélisation de l'axe des ordonnées
+    plt.xlabel('Axe des X')
     
     # passe le filet ou pas ?
     # => on va parcourir les valeurs jusqu'au filet et sans dépasser l'indice maximal

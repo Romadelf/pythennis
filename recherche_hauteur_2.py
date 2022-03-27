@@ -37,10 +37,13 @@ def rechercheHauteur2(y0, cibleHauteur):
         is `numpy.amin` or `numpy.amax` or `numpy.sum`.
     """
 
+    nb_essais_0 = [0]
     y0 = copy.deepcopy(y0) # Assure que le vecteur initial passé en argument ne sera pas muté
     n_bounces_0_ = [0]
     
     def h_fond_apres_rebond(h_init):
+        nb_essais_0[0] += 1
+        
         y0[2] = h_init
         n_bounces_0_[0] = 0
         events = solve_ivp(oderhs,
@@ -52,6 +55,7 @@ def rechercheHauteur2(y0, cibleHauteur):
                            max_step = 0.01
                            ).y_events
 
+        print('Essai: ', nb_essais_0[0], ' - y[2] = ', y0[2])
         if(len(events[2]) == 1 and n_bounces_0_[0] == 1):
             return events[2][0][2] - cibleHauteur
         else:
