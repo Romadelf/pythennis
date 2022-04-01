@@ -6,6 +6,7 @@
 #hauteur, statut = rechercheHauteur2(y0,cibleHauteur)
 #omega, statut = rechercheOmega(y0,cibleRebond)
 #omega, statut = rechercheOmega2(y0,cibleHauteur)
+
 import Trajectoire as Tj
 import RechercheRacine as R
 
@@ -20,16 +21,16 @@ n_point = 200  #nombre de point
 n_point_apres = 150  #apres rebond
 instants_a_evaluer = Tj.np.linspace(t_i, t_f,n_point ) 
   
-statut  , error = 0 , 42
+statut  , error = 0 , 0
 tol =  1/1000 #tolerance au millimetre 
 
 
 #intervalle 
 
-haut_min,haut_max =  0 , 80 # m
+haut_min,haut_max =  1 , 10 # m
 theta_min, theta_max = 0 , (Tj.np.pi)/2
 vitesse_min, vitesse_max = 1 , 500
-omega_min, omega_max = 1 , 1000
+omega_min, omega_max = 1 , 500
 
 cibleHauteur = 1 #arbitraire
 
@@ -253,89 +254,80 @@ def rechercheOmega(y0,cibleRebond) :
       
     
 #deuxieme partie recherche hauteur apres un Rebond  
+
+#Definition d'event
+def stop (t , y) :
+    if y[0]>Tj.distance_maximal_terrain:
+        return 0
+    else:
+        return int(y[0]-Tj.distance_maximal_terrain)
+stop.terminal = True
+#stop.direction = 1
     
-    
-    
-def rechercheHauteur2(y0,cibleHauteur):
-    
-    #Definition d'event
-    def event_apres_rebond(t,m):
-       
-              return m[2]-cibleHauteur
-             
-    event_apres_rebond.direction = 1
-    event_apres_rebond.terminal = True
-   
-    m = Tj.np.zeros(9)
-    
-    #argument de fonction : 
-    def f_hauteur(h):
-       
-          
-        y0[2] =  h 
-        solve = Tj.solve_ivp(
+def rechercheHauteur2(initial_ball_data,cibleHauteur):
+
+      
+    def hauteur2(h):
+        # définition des paramètres :
+        initial_ball_data[2] = h
+        frequence = 10**(5)
+        instants_a_evaluer = Tj.np.linspace(0, t_f, int(frequence * t_f))
+        
+
+        
+        pre_bounce_solve = Tj.solve_ivp(
             Tj.oderhs,
-            [t_i, t_f],
-            y0,
+            [0, t_f],
+            initial_ball_data,
             t_eval = instants_a_evaluer,
-            events =event_hauteur,
+            events = Tj.bouing,
             rtol = 10**(-5),
             atol = 10**(-8))
-    
-        timetable = solve.y
 
-       
-        if solve.status == 1:
+        ball_data_timetable = pre_bounce_solve.y
+        
+        x_rebond = ball_data_timetable[0,-1]
+        print ('la balle rebondit a ', x_rebond)
+        
+        if pre_bounce_solve.status == 1 : # = si il rebondi
+            # manière d'aller chercher les dernières variables dans ball_data_timetable
+            # TODO_LOW possiblement plus clair d'utilisation via pre_bounce_solve.t.shape[0]
+            after_bounce_ball_data = ball_data_timetable[0:ball_data_timetable.shape[0], ball_data_timetable.shape[1] - 1]
+            after_bounce_ball_data[5] *= Tj.coef
             
-           
-            m[0] = timetable [0,-1]
-            m[1] = timetable [1,-1]
-            m[2] = timetable [2,-1]
-            m[3] = timetable [3,-1]
-            m[4] = timetable [4,-1]
-            m[5] = Tj.coef*timetable [5,-1] #le, fameux coefficient egal a -0.7
-            m[6] = timetable [6,-1]
-            m[7] = timetable [7,-1]
-            m[8] = timetable [8,-1]
-
-
-            t_in = solve.t[-1] #on continue a partir de l'instant precedent 
+            # reinitialisation des données :
+            # frequence * (delta_t) == on cree un tableau de frequence fixe allant du nouveau t_i au t_f donné 
+            # ce qui assure une precision a chaque rebond quel que soit t_f donné
             
-            instants_a_evaluer_2 = Tj.np.linspace(t_in, t_f,n_point_apres)#on recree un tableau
-            solve_apres_rebond = Tj.solve_ivp(
+            t_i = pre_bounce_solve.t[-1] # avec -1, on lit le tableau à l'envers, donc on trouve le dernier élément
+            delta_t = t_f - t_i
+            instants_a_evaluer = Tj.np.linspace(t_i, t_f, int(frequence * delta_t))
+            
+            # on relance solve_ivp avec les nouvelles cond 
+            
+            post_bounce_solve =Tj.solve_ivp(
                 Tj.oderhs,
-                [t_in, t_f],
-                m,
-                t_eval = instants_a_evaluer_2,
-                events =event_apres_rebond,
+                [t_i, t_f],
+                after_bounce_ball_data,
+                t_eval = instants_a_evaluer,
+                events = [stop],
                 rtol = 10**(-5),
                 atol = 10**(-8))
-            
-            
-            if solve_apres_rebond.status == 1:
                
-                Nouveau_timetable  = solve_apres_rebond.y
-                timetable = Nouveau_timetable
-           
-      
-        x3_hauteur = timetable [2,-1]  #x3 est la hauteur 
-        
-        return x3_hauteur - cibleHauteur
-        
-           
-        
-      
-    return R.bissection(f_hauteur, haut_min, haut_max , tol) #bissection car se comporte mieux 
+            ball_data_timetable = Tj.np.concatenate((ball_data_timetable, post_bounce_solve.y), axis=1) # on regroupe les tableaux
 
-
-    
-
-   
-      
-              
-    
-
+        # debut :
         
+       # x=ball_data_timetable[0]  #longeur
+       # y=ball_data_timetable[1]  #largeur
+        z=ball_data_timetable[2]  #hauteur
+            
+
+       # index_max =  Tj.np.shape(x)[0] - 1 # car shape(x) = shape(y) = shape(z)
+  
+        return  z[-1]-cibleHauteur
+    return R.bissection( hauteur2,haut_min,haut_max, tol)
+ 
       
     
 
