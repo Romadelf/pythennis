@@ -58,8 +58,6 @@ def rechercheHauteur2(y0, cibleHauteur):
     pseudo_ev_rebond.terminal = False
     
     def ev_h_cible(t, y):
-        if(y[5] < 0):#TODO: patch temporaire à retirer à terme
-            return -1
         return y[2] - cibleHauteur
     ev_h_cible.direction = +1
     ev_h_cible.terminal = False
