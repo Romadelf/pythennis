@@ -37,12 +37,12 @@ def rechercheHauteur2(y0, cibleHauteur):
         is `numpy.amin` or `numpy.amax` or `numpy.sum`.
     """
 
-    has_bounced_0 = [False]
+    n_bounces_0 = [0]
     
     def h_fond_apres_rebond(h_init):
         #TODO: Ne prends pas en compte la hauteur après rebond lorsque la balle retombe vu les complications au niveau de la continuité => eventuellement voir si c'est possible
         y0[2] = h_init
-        has_bounced_0[0] = False
+        n_bounces_0[0] = 0
         h_cible_events = solve_ivp(oderhs,
                                    [0, t_max],
                                    y0,
@@ -50,7 +50,7 @@ def rechercheHauteur2(y0, cibleHauteur):
                                    max_step = 0.01
                                    ).y_events[0]
         if(h_cible_events.size > 0):
-            if(has_bounced_0[0]):
+            if(n_bounces_0[0] == 1):
                 return h_cible_events[0][2] - cibleHauteur
             else:
                 return -cibleHauteur
@@ -60,9 +60,9 @@ def rechercheHauteur2(y0, cibleHauteur):
     def ev_ligne_fond(t, y):
 
         # Rebond
-        if(!has_bounced_0[0] and y[2] <= 0):
+        if(y[2] <= 0 and y[5] < 0):
             y[5] *= -coef_restitution
-            has_bounced_0[0] = True
+            n_bounces_0[0] += 1
 
         return y[0] - ligne_fond
     ev_ligne_fond.terminal = True
