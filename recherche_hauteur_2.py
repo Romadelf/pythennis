@@ -36,33 +36,38 @@ def rechercheHauteur2(y0, cibleHauteur):
         singular values of the matrices, depending on whether `op`
         is `numpy.amin` or `numpy.amax` or `numpy.sum`.
     """
-    def pos_x0_a_cibleHauteur_apres_rebond(h_init):
+
+    has_bounced_0 = [False]
+    
+    def h_fond_apres_rebond(h_init):
         #TODO: Ne prends pas en compte la hauteur après rebond lorsque la balle retombe vu les complications au niveau de la continuité => eventuellement voir si c'est possible
         y0[2] = h_init
+        has_bounced_0[0] = False
         h_cible_events = solve_ivp(oderhs,
                                    [0, t_max],
                                    y0,
-                                   events = [pseudo_ev_rebond, ev_h_cible],
+                                   events = ev_ligne_fond,
                                    max_step = 0.01
-                                   ).y_events[1]
+                                   ).y_events[0]
         if(h_cible_events.size > 0):
-            return h_cible_events[0][0] - ligne_fond #TODO attention: là on vérifie pas si il y a un rebond
+            if(has_bounced_0[0]):
+                return h_cible_events[0][2] - cibleHauteur
+            else:
+                return -cibleHauteur
         else:
             return 42 #TODO: à améliorer mais en gros la balle n'atteint pas la hauteur cible demandée
-    def pseudo_ev_rebond(t, y):
-        if(y[2] <= 0 and y[5] < 0):
+
+    def ev_ligne_fond(t, y):
+
+        # Rebond
+        if(!has_bounced_0[0] and y[2] <= 0):
             y[5] *= -coef_restitution
-            ev_h_cible.terminal = True
-        return y[2]
-    pseudo_ev_rebond.direction = -1
-    pseudo_ev_rebond.terminal = False
+            has_bounced_0[0] = True
+
+        return y[0] - ligne_fond
+    ev_ligne_fond.terminal = True
     
-    def ev_h_cible(t, y):
-        return y[2] - cibleHauteur
-    ev_h_cible.direction = +1
-    ev_h_cible.terminal = False
-    
-    return bissection(pos_x0_a_cibleHauteur_apres_rebond,
+    return bissection(h_fond_apres_rebond,
                   y0[2] / marge_ratio,
                   y0[2] * marge_ratio,
                   tol)
