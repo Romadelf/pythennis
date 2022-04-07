@@ -2,16 +2,27 @@
 
  
 import Trajectoire as Tj
-import RechercheRacine as R
-import RechercheVitesse as RV
-import RechercheOmega as RW
 import cible as ci    
- 
+
+#☺essai
+vec3 = [1 , 2 ,0]
+
+#donné static
+x = [-11.89 ,0 ,  2] 
+
+   # vec = [4,(Tj.np.pi)/4, 6]  #cylindrique
+vec1 = [4,(Tj.np.pi)/2, 6]
+    # vecteur de norme 4          #choix arbitraire
+    # angle de pi/2 avec le sol
+    #hauteur de 6
+   # vec = ci.convert_Cy_to_Car(vec[0], vec[1], vec[2])   #cartesienne
+vec1 = ci.convert_Cy_to_Car(vec1[0], vec1[1], vec1[2])
+    
 
 def methode (E , vec):
     
     #condition initial 
-    x = [-11.89 ,0 ,  2]
+   
     frequence = 10**(5)
     instants_a_evaluer = Tj.np.linspace(0, ci.t_f, int(frequence * ci.t_f))
     
@@ -19,14 +30,7 @@ def methode (E , vec):
     #ainsi on a  : simpl = v**2 + 0.25*d*(w**2)
     #vecteur omega et vitesse ne doivent pas etre parrallele sinon erreur
     
-   # vec = [4,(Tj.np.pi)/4, 6]  #cylindrique
-    vec1 = [4,(Tj.np.pi)/2, 6]
-    # vecteur de norme 4          #choix arbitraire
-    # angle de pi/2 avec le sol
-    #hauteur de 6
-   # vec = ci.convert_Cy_to_Car(vec[0], vec[1], vec[2])   #cartesienne
-    vec1 = ci.convert_Cy_to_Car(vec1[0], vec1[1], vec1[2])
-    
+
 
     #verification :
         
@@ -139,4 +143,43 @@ def methode (E , vec):
     
     
     return bon_coef 
+
+def verification (coef , E , vec , vec1):
+    
+    
+    norm_v = Tj.np.sqrt(2*coef*E/Tj.m)                 #norme
+    norm_w = Tj.np.sqrt((1-coef)*8*E/(Tj.m*(Tj.d**2)))   #norme
+    
+    
+    vx1 = Tj.np.dot(Tj.vec_u_x1,vec) #vecteur v
+    vx2 = Tj.np.dot(Tj.vec_u_x2,vec)
+    vx3 = Tj.np.dot(Tj.vec_u_x3,vec)
+    v = [vx1*norm_v , vx2*norm_v , vx3*norm_v]
+    
+    
+    wx1 = Tj.np.dot(Tj.vec_u_x1,vec1) #vecteur w
+    wx2 = Tj.np.dot(Tj.vec_u_x2,vec1)
+    wx3 = Tj.np.dot(Tj.vec_u_x3,vec1)
+    w = [wx1*norm_w , wx2*norm_w , wx3*norm_w]
+  
+    y = Tj.np.zeros(9)
+    
+    y[0] = x[0]
+    y[1] = x[1]
+    y[2] = x[2]
+    
+    y[3] = v[0]
+    y[4] = v[1]
+    y[5] = v[2]
+    
+    y[6] = w[0]
+    y[7] = w[1]
+    y[8] = w[2]
+    
+    Tj.trajectoireFiletHorizontal(y, ci.t_f)
+ 
+    #faut que le coef soit tres important parce que sinon ca mene a des absurdite 
+    #en effet si w represente ne serais-ce que 1 pour 100 alors la vitesse de rotation
+    #sera tres importante 
+    return 
     
