@@ -52,17 +52,17 @@ def rechercheHauteur2(y0, cibleHauteur):
     def pseudo_ev_rebond(t, y):
         if(y[2] <= 0 and y[5] < 0):
             y[5] *= -coef_restitution
-            ev_h_cible.terminate = True
+            ev_h_cible.terminal = True
         return y[2]
     pseudo_ev_rebond.direction = -1
-    pseudo_ev_rebond.terminate = False
+    pseudo_ev_rebond.terminal = False
     
     def ev_h_cible(t, y):
         if(y[5] < 0):#TODO: patch temporaire à retirer à terme
             return -1
         return y[2] - cibleHauteur
     ev_h_cible.direction = +1
-    ev_h_cible.terminate = False
+    ev_h_cible.terminal = False
     
     return bissection(pos_x0_a_cibleHauteur_apres_rebond,
                   y0[2] / marge_ratio,
