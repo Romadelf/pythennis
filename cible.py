@@ -27,11 +27,11 @@ tol =  1/1000 #tolerance au millimetre
 
 #intervalle 
 
-haut_min,haut_max =  1 , 100 # m
+haut_min,haut_max =  0 , 100 # m
 theta_min, theta_max = 0, (Tj.np.pi)/2
 theta_min2, theta_max2 = -(Tj.np.pi)/2 , (Tj.np.pi)/2
 vitesse_min, vitesse_max = 1 , 2000
-omega_min, omega_max = 1 , 500
+omega_min, omega_max = 1 , 2000
 
 cibleHauteur = 1 #arbitraire
 
