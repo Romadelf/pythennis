@@ -34,7 +34,7 @@ def trajectoireFiletHorizontal2(y0, T):
 
         #vérification la balle est dans le filet
 
-        if y0[2] <= 0:
+        if y0[2] <= 0 and y0[5] < 0:
           #  print("Rebond")
             #changement de la vitesse initial selon z par un coefficient de rebond
             y0[5] = Tj.coef*y0[5]
