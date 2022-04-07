@@ -13,15 +13,31 @@ def methode (E , vec):
     #condition initial 
     x = [-11.89 ,0 ,  2]
     frequence = 10**(5)
-    instants_a_evaluer = Tj.np.linspace(0, ci.t_f, int(ci.frequence * ci.t_f))
+    instants_a_evaluer = Tj.np.linspace(0, ci.t_f, int(frequence * ci.t_f))
     
    # simpl = 2*E/(Tj.m) #version simplifieer
     #ainsi on a  : simpl = v**2 + 0.25*d*(w**2)
+    #vecteur omega et vitesse ne doivent pas etre parrallele sinon erreur
     
+   # vec = [4,(Tj.np.pi)/4, 6]  #cylindrique
+    vec1 = [4,(Tj.np.pi)/2, 6]
+    # vecteur de norme 4          #choix arbitraire
+    # angle de pi/2 avec le sol
+    #hauteur de 6
+   # vec = ci.convert_Cy_to_Car(vec[0], vec[1], vec[2])   #cartesienne
+    vec1 = ci.convert_Cy_to_Car(vec1[0], vec1[1], vec1[2])
     
+
+    #verification :
         
+    Prod_vec = Tj.np.cross(vec,vec1)
+    norm_Prod_vec = Tj.np.linalg.norm(Prod_vec)
+    if norm_Prod_vec == 0 :
+        print('la direction choisi est parallele a la direction de omega ')
+        print("veuillez modifié votre vecteur")
+        return [42 , -1]
     #parametre 
-        
+    pat = 0.05    
     H_max , H_inter = 0 ,0 
     norm_v, norm_w = 0 , 0 
     coef= 0.1 #m
@@ -34,10 +50,33 @@ def methode (E , vec):
     while coef<1 :
        norm_v = Tj.np.sqrt(2*coef*E/Tj.m)                 #norme
        norm_w = Tj.np.sqrt((1-coef)*8*E/(Tj.m*(Tj.d**2)))   #norme
-       v = norm_v*vec #vecteur
-       w = norm_w*vec #vecteur
-    
-       y = [x , v , w]
+       
+       
+       vx1 = Tj.np.dot(Tj.vec_u_x1,vec) #vecteur v
+       vx2 = Tj.np.dot(Tj.vec_u_x2,vec)
+       vx3 = Tj.np.dot(Tj.vec_u_x3,vec)
+       v = [vx1*norm_v , vx2*norm_v , vx3*norm_v]
+       
+       
+       wx1 = Tj.np.dot(Tj.vec_u_x1,vec1) #vecteur w
+       wx2 = Tj.np.dot(Tj.vec_u_x2,vec1)
+       wx3 = Tj.np.dot(Tj.vec_u_x3,vec1)
+       w = [wx1*norm_w , wx2*norm_w , wx3*norm_w]
+     
+       y = Tj.np.zeros(9)
+       
+       y[0] = x[0]
+       y[1] = x[1]
+       y[2] = x[2]
+       
+       y[3] = v[0]
+       y[4] = v[1]
+       y[5] = v[2]
+       
+       y[6] = w[0]
+       y[7] = w[1]
+       y[8] = w[2]
+       
     
       
        pre_bounce_solve = Tj.solve_ivp(
@@ -95,7 +134,7 @@ def methode (E , vec):
    #present a une hauteur plus elevé 
    #a la fin de la boucle soit 9iteration boncoef aura stoque le dernier 
    #coef pour lequel Hinter est egal Hmax
-       coef+= 0.1
+       coef+= pat
     
     
     
