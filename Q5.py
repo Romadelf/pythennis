@@ -1,17 +1,17 @@
 #E = (1/2)*m*v**2  + (1/8)*m*(d**2)*(w**2)
 
- 
+
 import Trajectoire as Tj
 import cible as ci    
 
 #☺essai
-vec3 = [1 , 2 ,0]
+vec3 = [1 , 2 ,1] #vitesse
 
 #donné static
 x = [-11.89 ,0 ,  2] 
 
    # vec = [4,(Tj.np.pi)/4, 6]  #cylindrique
-vec1 = [4,(Tj.np.pi)/2, 6]
+vec1 = [4,(Tj.np.pi)/2, 6] #omega
     # vecteur de norme 4          #choix arbitraire
     # angle de pi/2 avec le sol
     #hauteur de 6
@@ -35,16 +35,17 @@ def methode (E , vec):
     #verification :
         
     Prod_vec = Tj.np.cross(vec,vec1)
+    
     norm_Prod_vec = Tj.np.linalg.norm(Prod_vec)
     if norm_Prod_vec == 0 :
         print('la direction choisi est parallele a la direction de omega ')
-        print("veuillez modifié votre vecteur")
+        print("veuillez modifier votre vecteur")
         return [42 , -1]
     #parametre 
-    pat = 0.05    
+    pat = 0.005    
     H_max , H_inter = 0 ,0 
     norm_v, norm_w = 0 , 0 
-    coef= 0.1 #m
+    coef= 0.1
     
     #debut :
     #idee on raisonne en terme de pourcentage
@@ -59,12 +60,14 @@ def methode (E , vec):
        vx1 = Tj.np.dot(Tj.vec_u_x1,vec) #vecteur v
        vx2 = Tj.np.dot(Tj.vec_u_x2,vec)
        vx3 = Tj.np.dot(Tj.vec_u_x3,vec)
+       
        v = [vx1*norm_v , vx2*norm_v , vx3*norm_v]
        
        
        wx1 = Tj.np.dot(Tj.vec_u_x1,vec1) #vecteur w
        wx2 = Tj.np.dot(Tj.vec_u_x2,vec1)
        wx3 = Tj.np.dot(Tj.vec_u_x3,vec1)
+       
        w = [wx1*norm_w , wx2*norm_w , wx3*norm_w]
      
        y = Tj.np.zeros(9)
@@ -149,8 +152,8 @@ def verification (coef , E , vec , vec1):
     
     norm_v = Tj.np.sqrt(2*coef*E/Tj.m)                 #norme
     norm_w = Tj.np.sqrt((1-coef)*8*E/(Tj.m*(Tj.d**2)))   #norme
-    
-    
+    print('la norme de w vaut ' , norm_w/(2*Tj.np.pi))
+    print('la norme de v vaut ' , norm_v)
     vx1 = Tj.np.dot(Tj.vec_u_x1,vec) #vecteur v
     vx2 = Tj.np.dot(Tj.vec_u_x2,vec)
     vx3 = Tj.np.dot(Tj.vec_u_x3,vec)
@@ -161,7 +164,7 @@ def verification (coef , E , vec , vec1):
     wx2 = Tj.np.dot(Tj.vec_u_x2,vec1)
     wx3 = Tj.np.dot(Tj.vec_u_x3,vec1)
     w = [wx1*norm_w , wx2*norm_w , wx3*norm_w]
-  
+    
     y = Tj.np.zeros(9)
     
     y[0] = x[0]
