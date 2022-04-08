@@ -26,10 +26,6 @@ def methode (E , vec):
     frequence = 10**(5)
     instants_a_evaluer = Tj.np.linspace(0, ci.t_f, int(frequence * ci.t_f))
     
-   # simpl = 2*E/(Tj.m) #version simplifieer
-    #ainsi on a  : simpl = v**2 + 0.25*d*(w**2)
-    #vecteur omega et vitesse ne doivent pas etre parrallele sinon erreur
-    
 
 
     #verification :
