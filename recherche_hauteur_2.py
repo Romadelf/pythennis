@@ -6,7 +6,7 @@ from RechercheRacine import bissection
 from Trajectoire import oderhs
 from Trajectoire import hauteur_filet
 
-marge_ratio = 10
+marge_ratio = 1.25
 tol = 0.001 # 1 mm
 ligne_fond = 11.89
 coef_restitution = 0.7
