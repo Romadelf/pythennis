@@ -40,7 +40,6 @@ def rechercheHauteur2(y0, cibleHauteur):
     n_bounces_0_ = [0]
     
     def h_fond_apres_rebond(h_init):
-        #TODO: Ne prends pas en compte la hauteur après rebond lorsque la balle retombe vu les complications au niveau de la continuité => eventuellement voir si c'est possible
         y0[2] = h_init
         n_bounces_0_[0] = 0
         y_fond_0_ = solve_ivp(oderhs,
