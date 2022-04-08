@@ -13,17 +13,14 @@ coef_restitution = 0.7
 t_max = 10  #TODO essayer sys.maxsize ? # Ce temps doit être suffisant pour garantir que la balle atteigne la ligne de fond ou rebondisse deux fois
 
 """
-#FIXME
-Défauts connus :
-    - Ne prends pas en compte le filet
-    - Fonction non réplicable (du genre rate la premiere fois puis réussi à la suivante)
-    - Plusieurs incohérences dans le code marqués par des TODO doivent être résolu
+#FIXME La logique générale est vérifiée sauf la notion des bornes pour bissection.
+Voir le FIXME au niveau du return bissection(...)
     
-    Ceci dit, la fonction à dejà fait ses preuve malgré, bien qu'irrégulièrement
+    Ceci dit, la fonction fait déja ses preuves dans certaines conditions initiales favorables
 """
 def rechercheHauteur2(y0, cibleHauteur):
     """Renvoie la hauteur initiale nécessaire d'une balle dont les autres composantes sont fixées pour qu'elle atteigne une hauteur cible donnée au niveau de la ligne de fond, après rebond.
-#TODO documentation à finir
+#TODO documentation à finir (la suite vient d'un copier-collé pour la structure)
     Paramètres
     ----------
     y0 : vecteur des composantes # preciser les y0[0 à 8]
@@ -40,7 +37,7 @@ def rechercheHauteur2(y0, cibleHauteur):
         is `numpy.amin` or `numpy.amax` or `numpy.sum`.
     """
 
-    y0 = copy.deepcopy(y0)
+    y0 = copy.deepcopy(y0) # Assure que le vecteur initial passé en argument ne sera pas muté
     n_bounces_0_ = [0]
     
     def h_fond_apres_rebond(h_init):
@@ -79,6 +76,6 @@ def rechercheHauteur2(y0, cibleHauteur):
     ev_ligne_fond.terminal = True
     
     return bissection(h_fond_apres_rebond,
-                  y0[2] / marge_ratio,
-                  y0[2] * marge_ratio,
+                  y0[2] / marge_ratio, #FIXME erreur de logique : rien ne garantis que les bornes initiales donneront des images de signes opposées
+                  y0[2] * marge_ratio, # idem
                   tol)
