@@ -56,7 +56,7 @@ def rechercheHauteur2(y0, cibleHauteur):
                            ).y_events
 
         if(len(events[2]) == 1 and n_bounces_0_[0] == 1):
-            return events[0][0][2] - cibleHauteur
+            return events[2][0][2] - cibleHauteur
         else:
             return -cibleHauteur
 
