@@ -178,7 +178,7 @@ def trajectoireFiletHorizontal(initial_ball_data, t_f):
            #  print(' la balle touche le filet ')   
              return [0,0,0] # hors-jeu 
         i += 1
-        
+    print ('la balle rebondit a ', x_rebond)    
     return [
         x[index_max],
         y[index_max],
