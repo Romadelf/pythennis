@@ -7,7 +7,7 @@ marge_ratio = 10
 tol = 0.001 # 1 mm
 ligne_fond = 11.89
 coef_restitution = 0.7
-t_max = 5  #TODO essayer sys.maxsize ?
+t_max = 10  #TODO essayer sys.maxsize ? # Ce temps doit être suffisant pour garantir que la balle atteigne la ligne de fond ou rebondisse deux fois
 
 """
 #FIXME
@@ -53,8 +53,6 @@ def rechercheHauteur2(y0, cibleHauteur):
                 return y_fond_0_[0][2] - cibleHauteur
             else:
                 return -cibleHauteur
-        else:
-            return 42 #TODO: à améliorer mais en gros la balle n'atteint pas la hauteur cible demandée
 
     def ev_ligne_fond(t, y):
 
