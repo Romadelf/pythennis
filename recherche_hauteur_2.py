@@ -2,6 +2,7 @@ from scipy.integrate import solve_ivp
 
 from RechercheRacine import bissection
 from Trajectoire import oderhs
+from Trajectoire import hauteur_filet
 
 marge_ratio = 10
 tol = 0.001 # 1 mm
@@ -42,25 +43,35 @@ def rechercheHauteur2(y0, cibleHauteur):
     def h_fond_apres_rebond(h_init):
         y0[2] = h_init
         n_bounces_0_[0] = 0
-        y_fond_0_ = solve_ivp(oderhs,
-                                   [0, t_max],
-                                   y0,
-                                   events = ev_ligne_fond,
-                                   max_step = 0.01
-                                   ).y_events[0]
-        if(y_fond_0_.size > 0):
-            if(n_bounces_0_[0] == 1):
-                return y_fond_0_[0][2] - cibleHauteur
-            else:
-                return -cibleHauteur
+        events = solve_ivp(oderhs,
+                           [0, t_max],
+                           y0,
+                           events = [ev_filet,
+                                     ev_rebonds,
+                                     ev_ligne_fond],
+                           max_step = 0.01
+                           ).y_events
 
-    def ev_ligne_fond(t, y):
+        if(len(events[2]) == 1 and n_bounces_0_[0] == 1):
+            return events[0][0][2] - cibleHauteur
+        else:
+            return -cibleHauteur
 
-        # Rebond
+    def ev_filet(t, y):
+        if(y[0] <= 0):
+            return y[2] - hauteur_filet(y[1])
+        return 1
+    ev_filet.terminal = True
+    ev_filet.direction = -1
+    
+    def ev_rebonds(t, y):
         if(y[2] <= 0 and y[5] < 0):
             y[5] *= -coef_restitution
             n_bounces_0_[0] += 1
-
+        return n_bounces_0_[0] - 2
+    ev_rebonds.terminal = True
+    
+    def ev_ligne_fond(t, y):
         return y[0] - ligne_fond
     ev_ligne_fond.terminal = True
     
