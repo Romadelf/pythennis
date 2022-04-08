@@ -37,6 +37,8 @@ def trajectoireFiletHorizontal2(y0, T):
         if y0[2] <= 0 and y0[5] < 0:
           #  print("Rebond")
             #changement de la vitesse initial selon z par un coefficient de rebond
+            x_rebond =y0[0]
+            print ('la balle rebondit a ', x_rebond) 
             y0[5] = Tj.coef*y0[5]
             #ca fait tout les rebond essaye avec coef egal -0.8  
         index_max = Tj.np.shape(x1)[0] - 1 # car shape(x) = shape(y) = shape(z)    
