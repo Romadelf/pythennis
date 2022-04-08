@@ -1,3 +1,5 @@
+import copy
+
 from scipy.integrate import solve_ivp
 
 from RechercheRacine import bissection
@@ -38,6 +40,7 @@ def rechercheHauteur2(y0, cibleHauteur):
         is `numpy.amin` or `numpy.amax` or `numpy.sum`.
     """
 
+    y0 = copy.deepcopy(y0)
     n_bounces_0_ = [0]
     
     def h_fond_apres_rebond(h_init):
